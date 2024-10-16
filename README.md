@@ -25,7 +25,7 @@ The **Doskey Alias Manager** is a Python script designed to simplify the managem
 
 3. Run the script:
    ```bash
-   python doskey_alias_manager.py
+   python doskey_alias_manager.py --install
    ```
 
 ## Usage
