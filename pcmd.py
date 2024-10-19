@@ -81,6 +81,7 @@ def create_batch_file(doskey_file):
     commands = read_doskey_file(doskey_file)
 
     with open(batch_file_path, 'w') as batch_file:
+        batch_file.write(f'@echo off\n')
         for i, command in enumerate(commands):
             batch_file.write(f'doskey {command["alias"]}={command["command"]}\n')
         batch_file.write(f'cls\n')
