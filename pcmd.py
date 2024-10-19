@@ -6,7 +6,6 @@ import shutil
 import winreg as reg
 import shlex
 
-
 def check_windows():
     if os.name != 'nt':
         print("This script only works on Windows.")
@@ -33,7 +32,7 @@ def setup_doskey():
 
     if not os.path.exists(doskey_file):
         with open(doskey_file, 'w') as f:
-            json.dump([], f) 
+            json.dump([], f)
 
     return doskey_file
 
@@ -56,9 +55,10 @@ def update_doskey_file(doskey_file, data):
             if entry['alias'] == data['alias'] and entry['command'] == data['command']:
                 print(f"Duplicate entry found: {data}. Not adding.")
                 return
-        current_data.append(data)  
-        f.seek(0) e
-        f.truncate()  
+
+        current_data.append(data)
+        f.seek(0)
+        f.truncate()
         json.dump(current_data, f, indent=4)
 
 def read_doskey_file(doskey_file):
@@ -86,7 +86,6 @@ def create_batch_file(doskey_file):
         batch_file.write(f'cls\n')
     return batch_file_path
 
- 
 
 def main():
     check_windows()
@@ -102,10 +101,12 @@ def main():
     args = parser.parse_args()
 
     if args.set:
+        print(args.set)
         try:
-            alias, command = shlex.split(args.set, posix=False)
-            command = '='.join(command.split('=')[1:])
-            data = {"alias": alias.strip(), "command": command.strip()}
+            alias_part, command_part = args.set.split('=', 1)
+            alias = alias_part.strip()
+            command = shlex.split(command_part.strip(), posix=False)
+            data = {"alias": alias, "command": ' '.join(command)}
             update_doskey_file(doskey_file, data)
             print(f'Added: {data}')
         except ValueError:
@@ -129,9 +130,9 @@ def main():
         user_docs_path = os.path.expanduser(r"~\Documents")
         doskey_folder = os.path.join(user_docs_path, 'doskey')
         script_path = os.path.abspath(__file__)
-        shutil.copy(script_path, doskey_folder)  
+        shutil.copy(script_path, doskey_folder) 
 
-      pcmd_command = {"alias": "pcmd", "command": f'{sys.executable} "{os.path.join(doskey_folder, os.path.basename(script_path))}" $*'}
+        pcmd_command = {"alias": "pcmd", "command": f'{sys.executable} "{os.path.join(doskey_folder, os.path.basename(script_path))}" $*'}
         update_doskey_file(doskey_file, pcmd_command)
         pc_command = {"alias": "pc", "command": f'{sys.executable} "{os.path.join(doskey_folder, os.path.basename(script_path))}" $*'}
         update_doskey_file(doskey_file, pc_command)
