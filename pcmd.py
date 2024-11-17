@@ -12,15 +12,30 @@ def check_windows():
         sys.exit(1)
 
 def set_registry(bat_file_path):
+    # Define the registry key and value name
     registry_key = r"Software\Microsoft\Command Processor"
     value_name = "AutoRun"
 
+    # Check if the batch file exists
+    if not os.path.isfile(bat_file_path):
+        print(f"Error: The specified batch file '{bat_file_path}' does not exist.")
+        return
+
     try:
-        with reg.OpenKey(reg.HKEY_CURRENT_USER, registry_key, 0, reg.KEY_SET_VALUE) as key:
-            reg.SetValueEx(key, value_name, 0, reg.REG_SZ, bat_file_path)
-            print("Registry updated to run the batch file on CMD open.")
+        # Create or open the registry key
+        key = reg.CreateKey(reg.HKEY_CURRENT_USER, registry_key)
+        # Set the AutoRun value to the path of the batch file
+        reg.SetValueEx(key, value_name, 0, reg.REG_SZ, bat_file_path)
+        print("Registry updated to run the batch file on CMD open.")
+    except PermissionError:
+        print("Permission Error: Please run this script as an administrator.")
     except Exception as e:
-        print(f"Failed to update registry: {e}")
+        print(f"An unexpected error occurred: {e}")
+    finally:
+        # Close the registry key
+        reg.CloseKey(key)
+
+    
 
 def setup_doskey():
     user_docs_path = os.path.expanduser(r"~\Documents")
@@ -148,5 +163,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
